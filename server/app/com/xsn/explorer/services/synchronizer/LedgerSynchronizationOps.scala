@@ -60,10 +60,7 @@ private[synchronizer] class LedgerSynchronizationOps @Inject() (
   def getFullRPCBlock(
       blockhash: Blockhash
   ): FutureApplicationResult[rpc.Block.HasTransactions[rpc.TransactionVIN]] = {
-    val timer = Kamon
-      .timer("getFullRPCBlock")
-      .withTag("blockhash", blockhash.string)
-      .start()
+  
 
     import io.scalaland.chimney.dsl._
 
@@ -89,7 +86,7 @@ private[synchronizer] class LedgerSynchronizationOps @Inject() (
 
     val result = partial.flatMap(_.toFutureOr).toFuture
 
-    result.onComplete(_ => timer.stop())
+    result.onComplete()
 
     result
   }
@@ -97,11 +94,7 @@ private[synchronizer] class LedgerSynchronizationOps @Inject() (
   def getBlockData(
       rpcBlock: rpc.Block[_]
   ): FutureApplicationResult[BlockData] = {
-    val timer = Kamon
-      .timer("getBlockData")
-      .withTag("hash", rpcBlock.hash.string)
-      .withTag("height", rpcBlock.height.int.toLong)
-      .start()
+ 
 
     val result = for {
       extractionMethod <- blockService.extractionMethod(rpcBlock).toFutureOr
@@ -122,7 +115,7 @@ private[synchronizer] class LedgerSynchronizationOps @Inject() (
       (block, contracts, filterFactory, rewards)
     }
 
-    result.toFuture.onComplete(_ => timer.stop())
+  
 
     result.toFuture
   }

@@ -47,10 +47,7 @@ class LedgerSynchronizerService @Inject() (
   }
 
   private def applyPendingUpdate(): FutureApplicationResult[Unit] = {
-    val timer = Kamon
-      .timer("applyPendingUpdate")
-      .withoutTags()
-      .start()
+
 
     val partial = for {
       blockhashMaybe <- blockChunkRepository.findSyncingBlock().toFutureOr
@@ -82,7 +79,7 @@ class LedgerSynchronizerService @Inject() (
     }
 
     val result = partial.flatMap(identity).toFuture
-    result.onComplete(_ => timer.stop())
+  
 
     result
   }
@@ -129,10 +126,7 @@ class LedgerSynchronizerService @Inject() (
 
   private def sync(goal: Range): FutureApplicationResult[Unit] = {
     goal.foldLeft[FutureApplicationResult[Unit]](Future.successful(Good(()))) { case (previous, height) =>
-      val timer = Kamon
-        .timer("syncRange")
-        .withTag("height", height.toLong)
-        .start()
+
 
       val result = for {
         _ <- previous.toFutureOr
@@ -141,21 +135,18 @@ class LedgerSynchronizerService @Inject() (
         _ <- append(block).toFutureOr
       } yield ()
 
-      result.toFuture.onComplete(_ => timer.stop())
+ 
 
       result.toFuture
     }
   }
 
   private def rollback(goal: BlockPointer): FutureOr[persisted.Block] = {
-    val timer = Kamon
-      .timer("rollback")
-      .withoutTags()
-      .start()
+
 
     val partial = ledgerDataHandler.pop()
 
-    partial.onComplete(_ => timer.stop())
+    
 
     partial.toFutureOr
       .flatMap { removedBlock =>
@@ -174,11 +165,8 @@ class LedgerSynchronizerService @Inject() (
   private def append(
       newBlock: rpc.Block.HasTransactions[_]
   ): FutureApplicationResult[Unit] = {
-    val timer = Kamon
-      .timer("appendBlock")
-      .withTag("hash", newBlock.hash.string)
-      .withTag("height", newBlock.height.int.toLong)
-      .start()
+
+
 
     val result = for {
       data <- syncOps.getBlockData(newBlock).toFutureOr
@@ -210,7 +198,7 @@ class LedgerSynchronizerService @Inject() (
       }
     }
 
-    result.toFuture.onComplete(_ => timer.stop())
+
 
     result.toFuture
   }

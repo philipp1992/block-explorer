@@ -33,11 +33,7 @@ class BlockParallelChunkSynchronizer @Inject() (
       rewards: Option[BlockRewards]
   ): FutureApplicationResult[Unit] = {
     val start = System.currentTimeMillis()
-    val timer = Kamon
-      .timer("syncSingleBlock")
-      .withTag("height", block.height.int.toLong)
-      .withTag("hash", block.hash.string)
-      .start()
+
 
     val result = for {
       stateMaybe <- blockChunkRepository.findSyncState(block.hash).toFutureOr
@@ -58,7 +54,7 @@ class BlockParallelChunkSynchronizer @Inject() (
       )
     } yield ()
 
-    result.toFuture.onComplete(_ => timer.stop())
+  
 
     result.toFuture
   }

@@ -32,17 +32,14 @@ class LegacyLedgerSynchronizerService @Inject() (
     * this method concurrently because the behavior is undefined.
     */
   def synchronize(blockhash: Blockhash): FutureApplicationResult[Unit] = {
-    val timer = Kamon
-      .timer("synchronizeBlockhash")
-      .withTag("hash", blockhash.string)
-      .start()
+ 
 
     val result = for {
       data <- syncOps.getRPCBlock(blockhash).toFutureOr
       _ <- synchronize(data).toFutureOr
     } yield ()
 
-    result.toFuture.onComplete(_ => timer.stop())
+
 
     result.toFuture
   }
@@ -51,11 +48,7 @@ class LegacyLedgerSynchronizerService @Inject() (
       block: rpc.Block.Canonical
   ): FutureApplicationResult[Unit] = {
     logger.info(s"Synchronize block ${block.height}, hash = ${block.hash}")
-    val timer = Kamon
-      .timer("synchronizeBlock")
-      .withTag("hash", block.hash.string)
-      .withTag("height", block.height.int.toLong)
-      .start()
+
 
     val result = for {
       latestBlockMaybe <- blockDataHandler
@@ -72,7 +65,6 @@ class LegacyLedgerSynchronizerService @Inject() (
         .toFutureOr
     } yield ()
 
-    result.toFuture.onComplete(_ => timer.stop())
 
     result.toFuture
   }
@@ -125,11 +117,7 @@ class LegacyLedgerSynchronizerService @Inject() (
       logger.info(
         s"Reorganization to push block ${newBlock.height}, hash = ${newBlock.hash}"
       )
-      val timer = Kamon
-        .timer("handleReorganization")
-        .withTag("hash", newBlock.hash.string)
-        .withTag("height", newBlock.height.int.toLong)
-        .start()
+
 
       val result = for {
         blockhash <- newBlock.previousBlockhash.toFutureOr(BlockNotFoundError)
@@ -138,18 +126,14 @@ class LegacyLedgerSynchronizerService @Inject() (
         _ <- synchronize(newBlock).toFutureOr
       } yield ()
 
-      result.toFuture.onComplete(_ => timer.stop())
+      
 
       result.toFuture
     } else if (newBlock.height.int > ledgerBlock.height.int) {
       logger.info(
         s"Filling holes to push block ${newBlock.height}, hash = ${newBlock.hash}"
       )
-      val timer = Kamon
-        .timer("synchronizeBlockRange")
-        .withTag("hash", newBlock.hash.string)
-        .withTag("height", newBlock.height.int.toLong)
-        .start()
+
 
       val result = for {
         _ <- sync(
@@ -158,7 +142,7 @@ class LegacyLedgerSynchronizerService @Inject() (
         _ <- synchronize(newBlock).toFutureOr
       } yield ()
 
-      result.toFuture.onComplete(_ => timer.stop())
+    
 
       result.toFuture
     } else {
@@ -193,11 +177,7 @@ class LegacyLedgerSynchronizerService @Inject() (
   private def appendBlock(
       newBlock: rpc.Block.Canonical
   ): FutureApplicationResult[Unit] = {
-    val timer = Kamon
-      .timer("appendBlock")
-      .withTag("hash", newBlock.hash.string)
-      .withTag("height", newBlock.height.int.toLong)
-      .start()
+ 
 
     val result = for {
       // if newBlock is the genesis block we need to retrieve the full block in order to get the block transactions
@@ -213,7 +193,7 @@ class LegacyLedgerSynchronizerService @Inject() (
         .toFutureOr
     } yield ()
 
-    result.toFuture.onComplete(_ => timer.stop())
+    
 
     result.toFuture
   }
@@ -239,16 +219,13 @@ class LegacyLedgerSynchronizerService @Inject() (
   /** Trim the ledger until the given block height, if the height is 4, the last stored block will be 3.
     */
   private def trimTo(height: Height): FutureApplicationResult[Unit] = {
-    val timer = Kamon
-      .timer("trimBlock")
-      .withoutTags()
-      .start()
+
 
     val partial = ledgerDataHandler
       .pop()
       .toFutureOr
 
-    partial.toFuture.onComplete(_ => timer.stop())
+   
 
     val result = partial
       .flatMap { block =>

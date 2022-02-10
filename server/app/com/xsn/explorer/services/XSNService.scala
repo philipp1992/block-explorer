@@ -136,14 +136,11 @@ class XSNServiceRPCImpl @Inject() (
     }
 
     retry(shouldRetry) {
-      val timer = Kamon
-        .timer("xsn-service")
-        .withTag("operation", name)
-        .start()
+
 
       val result = f
 
-      result.onComplete(_ => timer.stop())
+     
       result
     }
   }
