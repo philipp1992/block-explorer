@@ -5,7 +5,6 @@ scalaVersion := "2.13.8"
 fork in Test := true
 
 scalacOptions ++= Seq(
-  "-Xfatal-warnings",
   "-unchecked",
   "-deprecation",
   "-feature",
@@ -16,7 +15,7 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code",
   "-Ywarn-numeric-widen",
   "-Ywarn-value-discard",
-  "-Ywarn-unused"
+
 )
 
 val playsonifyVersion = "2.3.0"
