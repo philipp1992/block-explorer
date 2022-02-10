@@ -86,7 +86,7 @@ private[synchronizer] class LedgerSynchronizationOps @Inject() (
 
     val result = partial.flatMap(_.toFutureOr).toFuture
 
-    result.onComplete()
+
 
     result
   }
