@@ -10,7 +10,7 @@ import com.xsn.explorer.models.values._
 import com.xsn.explorer.services.synchronizer.repository.BlockChunkRepository
 import com.xsn.explorer.services.{EmailService, XSNService}
 import javax.inject.Inject
-import kamon.Kamon
+
 import org.scalactic.{Bad, Good, One}
 import org.slf4j.LoggerFactory
 

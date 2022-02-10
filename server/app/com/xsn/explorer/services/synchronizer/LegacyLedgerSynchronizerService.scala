@@ -10,7 +10,7 @@ import com.xsn.explorer.models.values._
 import com.xsn.explorer.services.XSNService
 import com.xsn.explorer.util.Extensions.FutureOrExt
 import javax.inject.Inject
-import kamon.Kamon
+
 import org.scalactic.Good
 import org.slf4j.LoggerFactory
 

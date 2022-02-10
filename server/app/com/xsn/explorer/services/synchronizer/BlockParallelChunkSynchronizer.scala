@@ -9,7 +9,7 @@ import com.xsn.explorer.models.{BlockRewards, TPoSContract}
 import com.xsn.explorer.services.synchronizer.operations.BlockParallelChunkAddOps
 import com.xsn.explorer.services.synchronizer.repository.BlockChunkRepository
 import javax.inject.Inject
-import kamon.Kamon
+
 import org.scalactic.Good
 import org.slf4j.LoggerFactory
 

@@ -14,7 +14,6 @@ import com.xsn.explorer.models._
 import com.xsn.explorer.models.values._
 import com.xsn.explorer.util.RetryableFuture
 import javax.inject.Inject
-import kamon.Kamon
 import org.scalactic.{Bad, Good, One}
 import org.slf4j.LoggerFactory
 import play.api.libs.json._
