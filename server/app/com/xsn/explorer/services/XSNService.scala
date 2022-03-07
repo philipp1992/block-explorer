@@ -191,6 +191,7 @@ class XSNServiceRPCImpl @Inject() (
     val errorCodeMapper = Map(-5 -> TransactionError.NotFound(txid))
 
     val result = retrying("getrawtransaction") {
+      logger.info(s"getting rawtransaction for $txid")
       server
         .post(
           s"""{ "jsonrpc": "1.0", "method": "getrawtransaction", "params": ["${txid.string}", 1] }"""
@@ -210,7 +211,9 @@ class XSNServiceRPCImpl @Inject() (
     result.foreach {
       case Bad(errors) =>
         logger.info(s"Failed to get raw transaction $txid, errors = $errors")
-      case _ => ()
+      case _ => (
+         logger.info(s"got rawtransaction for $txid")
+      )
     }
 
     result
