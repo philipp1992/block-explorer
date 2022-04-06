@@ -127,11 +127,10 @@ class XSNServiceRPCImpl @Inject() (
       retryConfig.initialDelay,
       retryConfig.maxDelay
     )
-    val shouldRetry: Try[ApplicationResult[A]] => Boolean = {
-      case Success(Bad(One(XSNWorkQueueDepthExceeded))) => true
-      case Success(Bad(One(XSNWarmingUp))) => true
-      case Failure(_: ConnectException) => true
-      case _ => false
+  val shouldRetry: Try[ApplicationResult[A]] => Boolean = {
+      case result => 
+        logger.info(s"Retries disabled, result = $result")
+        false
     }
 
     retry(shouldRetry) {
@@ -159,7 +158,9 @@ class XSNServiceRPCImpl @Inject() (
             response,
             errorCodeMapper
           )
+
           maybe.getOrElse {
+            logger.debug(s"response from xsn server, txid = ${txid.string}, status = ${response.status}, response = ${response.body}")
             getResult[rpc.UnconfirmedTransaction[rpc.TransactionVIN]](
               response,
               errorCodeMapper
