@@ -34,5 +34,5 @@ object ScriptPubKey {
       } yield ScriptPubKey(t, asm = asm, hex = hex, addresses = addresses.orElse(address).getOrElse(List.empty))
     }
   }
-}
+
 }
