@@ -22,15 +22,17 @@ case class ScriptPubKey(
 object ScriptPubKey {
 
   implicit val reads: Reads[Option[ScriptPubKey]] = {
-    val builder = (__ \ "type").read[String] and
+       val builder = (__ \ "type").read[String] and
       (__ \ "asm").read[String] and
       (__ \ "hex").read[String].map(HexString.from) and
-      (__ \ "addresses").readNullable[List[Address]].map(_ getOrElse List.empty)
+      (__ \ "addresses").readNullable[List[Address]] and
+      (__ \ "address").readNullable[Address].map(_.map(a => List(a)))
 
-    builder.apply { (t, asm, hexString, addresses) =>
+    builder.apply { (t, asm, hexString, addresses, address) =>
       for {
         hex <- hexString
-      } yield ScriptPubKey(t, asm = asm, hex = hex, addresses = addresses)
+      } yield ScriptPubKey(t, asm = asm, hex = hex, addresses = addresses.orElse(address).getOrElse(List.empty))
     }
   }
+}
 }
