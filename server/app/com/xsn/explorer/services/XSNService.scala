@@ -129,7 +129,7 @@ class XSNServiceRPCImpl @Inject() (
     )
   val shouldRetry: Try[ApplicationResult[A]] => Boolean = {
       case result => 
-        logger.info(s"Retries disabled, result = $result")
+       // logger.info(s"Retries disabled, result = $result")
         false
     }
 
